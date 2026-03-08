@@ -1,0 +1,53 @@
+-- PAINEL SPEED+JUMP INFINITY 🇧🇷🤨 con Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "PAINEL SPEED+JUMP INFINITY 🇧🇷🤨",
+   LoadingTitle = "Carregando Painel...",
+   LoadingSubtitle = "By Crew 🔥",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "PainelConfigs",
+      FileName = "SpeedJumpInfinity"
+   }
+})
+
+-- Sección principal
+local MainTab = Window:CreateTab("⚡ Funções", 4483362458)
+
+-- Botón Speed
+MainTab:CreateButton({
+   Name = "Ativar Speed ⚡",
+   Callback = function()
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+      print("Speed Ativado! ⚡")
+   end,
+})
+
+-- Botón Jump Infinity
+MainTab:CreateButton({
+   Name = "Ativar Jump Infinity 🌀",
+   Callback = function()
+      local player = game.Players.LocalPlayer
+      local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+
+      if humanoid then
+         humanoid.UseJumpPower = true
+         humanoid.JumpPower = 200
+         humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+         humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
+         print("Jump Infinity Ativado! 🌀")
+      end
+   end,
+})
+
+-- Slider Speed (mantiene control dinámico)
+MainTab:CreateSlider({
+   Name = "Controlar Velocidade",
+   Range = {16, 200},
+   Increment = 5,
+   CurrentValue = 16,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
