@@ -1,0 +1,99 @@
+-- [[ ÑAKURA XIT⁹⁹⁰ - ESTABLE & LIGERO ]] --
+local LP = game:GetService("Players").LocalPlayer
+local RS = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local Mouse = LP:GetMouse()
+
+-- Interfaz Visual Mini
+local Gui = Instance.new("ScreenGui", game.CoreGui)
+local Main = Instance.new("Frame", Gui)
+Main.Size = UDim2.new(0, 150, 0, 110)
+Main.Position = UDim2.new(0.1, 0, 0.4, 0)
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+
+-- Bordes Redondeados (Opcional pero se ve mejor)
+local Corner = Instance.new("UICorner", Main)
+Corner.CornerRadius = UDim.new(0, 8)
+
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Text = "ÑAKURA XIT⁹⁹⁰"
+Title.TextColor3 = Color3.fromRGB(255, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+
+-- Variables
+_G.Aimbot = false
+_G.Noclip = false
+
+-- Función para Crear Botones
+local function CreateBtn(name, y, callback)
+    local btn = Instance.new("TextButton", Main)
+    btn.Size = UDim2.new(0, 130, 0, 30)
+    btn.Position = UDim2.new(0.5, -65, 0, y)
+    btn.Text = name .. ": OFF"
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 12
+    
+    local bCorner = Instance.new("UICorner", btn)
+    bCorner.CornerRadius = UDim.new(0, 6)
+    
+    btn.MouseButton1Click:Connect(function()
+        local state = callback()
+        btn.Text = name .. (state and ": ON" or ": OFF")
+        btn.TextColor3 = state and Color3.new(1, 0, 0) or Color3.new(1, 1, 1)
+    end)
+end
+
+-- 1. AIMBOT NORMAL (Mueve la cámara)
+CreateBtn("AIMBOT", 35, function()
+    _G.Aimbot = not _G.Aimbot
+    return _G.Aimbot
+end)
+
+-- Lógica de Aimbot Fluida
+RS.RenderStepped:Connect(function()
+    if _G.Aimbot then
+        local closest = nil
+        local shortestDist = math.huge
+        
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= LP and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+                local pos, onScreen = Camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                if onScreen then
+                    local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                    if magnitude < shortestDist then
+                        shortestDist = magnitude
+                        closest = v
+                    end
+                end
+            end
+        end
+        
+        if closest then
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, closest.Character.HumanoidRootPart.Position)
+        end
+    end
+end)
+
+-- 2. WALLCK (Noclip)
+CreateBtn("WALLCK", 70, function()
+    _G.Noclip = not _G.Noclip
+    return _G.Noclip
+end)
+
+RS.Stepped:Connect(function()
+    if _G.Noclip and LP.Character then
+        for _, p in pairs(LP.Character:GetDescendants()) do
+            if p:IsA("BasePart") and p.CanCollide == true then 
+                p.CanCollide = false 
+            end
+        end
+    end
+end)
